@@ -138,7 +138,7 @@ class Digit2Word:
 
     @classmethod
     def from_float(cls, num: float):
-        entry =
+        entry = str(num)
         if len(entry > 2):
             raise ValueError("Invalid entry! Value represent a float")
         if not entry[0].isdigit() or not entry[1].isdigit():
