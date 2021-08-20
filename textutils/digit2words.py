@@ -1,3 +1,4 @@
+import math
 from math import ceil
 from enum import Enum, auto
 
@@ -76,9 +77,13 @@ class Digit2Word:
         1: "",
         2: "mil ",
         3: "millones ",
-        4: "mil millones ",
+        4: "mil ",
         5: "billones ",
-        6: "trillones ",
+        6: "mil ",
+        7: "trillones ",
+        8: "mil ",
+        9: "cuatrillones ",
+        10: "mil ",
     }
 
     @staticmethod
@@ -106,52 +111,42 @@ class Digit2Word:
         result = ""
         quantity = num
         n_digits = len(quantity)
-        groups = int(ceil(n_digits/3.0))
         g_digits = quantity[::-1]
         g_digits = [(g_digits[i:i + constN]) for i in range(0, n_digits, constN)]
         g_digits = [q[::-1] for q in g_digits]
+        last_loop = len(g_digits)
         for i, g in enumerate(g_digits, start=1):
             partial = Digit2Word.hundreds(g) + Digit2Word.exponent_counter[i]
             if partial == "un mil ":
                 partial = "mil "
-            if i == 3 and partial == "un millones ":
-                partial = partial[:-5]
-                partial += "ón "
-            if i == 4 and partial == "un mil millones ":
-                partial = "mil millones "
-            if i == 5 and partial == "un billones ":
-                partial = partial[:-5]
-                partial += "ón "
-            if i == 6 and partial == "un trillones ":
+            if i == last_loop and partial.startswith("un") and partial.endswith("llones "):
                 partial = partial[:-5]
                 partial += "ón "
             result = partial + result
-        return result
+
+        return result.capitalize()
 
     def __init__(self, num: str, currency: Currency = Currency.MX):
         self.currency = currency
         self.currency_descriptor = self.currencies[self.currency][0]
         self.currency_ending = self.currencies[self.currency][1]
-        entry = num.split(".")
+        entry = num.replace(",", "").split(".")
         self.value = entry[0]
-        self.cents = entry[1] if entry[1] else "00"
+        try:
+            self.cents = str(int(round(int(entry[1])/10**(len(entry[1])-1), 1)*10))
+        except IndexError as e:
+            self.cents = "00"
 
     @classmethod
     def from_float(cls, num: float):
-        entry =
-        if len(entry > 2):
-            raise ValueError("Invalid entry! Value represent a float")
-        if not entry[0].isdigit() or not entry[1].isdigit():
-            raise ValueError("String does not represent a float value")
-        num = float(num)
-        return cls(num)
+        return cls(str(num))
 
     def __str__(self):
         return f"{Digit2Word.convert(self.value)}{self.currency_descriptor} {self.cents}/100 {self.currency_ending}"
 
 
 def main() -> None:
-    d2w = Digit2Word("15921245511001234.42")
+    d2w = Digit2Word("1,245,001,001,234.4358")
     print(str(d2w))
 
 if __name__ == "__main__":
