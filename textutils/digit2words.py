@@ -1,3 +1,4 @@
+import decimal
 from math import ceil
 from enum import Enum, auto
 
@@ -76,9 +77,12 @@ class Digit2Word:
         1: "",
         2: "mil ",
         3: "millones ",
-        4: "mil millones ",
+        4: "mil ",
         5: "billones ",
-        6: "trillones ",
+        6: "mil ",
+        7: "trillones ",
+        8: "mil ",
+        9: "cuatrillones ",
     }
 
     @staticmethod
@@ -117,12 +121,15 @@ class Digit2Word:
             if i == 3 and partial == "un millones ":
                 partial = partial[:-5]
                 partial += "ón "
-            if i == 4 and partial == "un mil millones ":
-                partial = "mil millones "
+            # if i == 4 and partial == "un mil millones ":
+            #     partial = "mil millones "
             if i == 5 and partial == "un billones ":
                 partial = partial[:-5]
                 partial += "ón "
             if i == 6 and partial == "un trillones ":
+                partial = partial[:-5]
+                partial += "ón "
+            if i == 9 and partial == "un cuatrillones ":
                 partial = partial[:-5]
                 partial += "ón "
             result = partial + result
@@ -134,24 +141,27 @@ class Digit2Word:
         self.currency_ending = self.currencies[self.currency][1]
         entry = num.split(".")
         self.value = entry[0]
-        self.cents = entry[1] if entry[1] else "00"
+        if len(entry) > 1:
+            self.cents = entry[1]
+        else:
+            self.cents = "00"
 
     @classmethod
     def from_float(cls, num: float):
-        entry = str(num)
-        if len(entry > 2):
-            raise ValueError("Invalid entry! Value represent a float")
-        if not entry[0].isdigit() or not entry[1].isdigit():
-            raise ValueError("String does not represent a float value")
-        num = float(num)
-        return cls(num)
+        entry = str(decimal.Decimal.from_float(num))
+        # if len(entry > 2):
+        #     raise ValueError("Invalid entry! Value represent a float")
+        # if not entry[0].isdigit() or not entry[1].isdigit():
+        #     raise ValueError("String does not represent a float value")
+        # num = float(num)
+        return cls(entry)
 
     def __str__(self):
         return f"{Digit2Word.convert(self.value)}{self.currency_descriptor} {self.cents}/100 {self.currency_ending}"
 
 
 def main() -> None:
-    d2w = Digit2Word("15921245511001234.42")
+    d2w = Digit2Word("981234.42")
     print(str(d2w))
 
 if __name__ == "__main__":
