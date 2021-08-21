@@ -1,5 +1,22 @@
 from enum import Enum, auto
 
+class Currency(Enum):
+    MX = auto()
+    US = auto()
+    CA = auto()
+    RU = auto()
+    EU = auto()
+    JP = auto()
+
+
+currencies = {
+    Currency.MX: ("＄", "pesos", "M. N."),
+    Currency.US: ("＄", "dólares americanos", "US Dollar"),
+    Currency.CA: ("C＄", "dólares canadienses", "CA Dollar"),
+    Currency.EU: ("€", "euros", "€"),
+    Currency.RU: ("₽", "rublos rusos", "RU Ruble"),
+    Currency.JP: ("¥", "yen japónes", "JP Yen"),
+}
 digits = {
     0: "cero",
     1: "un",
@@ -112,28 +129,12 @@ def convert(num: str):
     return result.capitalize()
 
 
-class Currency(Enum):
-    MX = auto()
-    US = auto()
-    CA = auto()
-    RU = auto()
-    EU = auto()
-
-
 class Digit2Word:
     """ Converts any quantity into its equivalent phrase (Spanish)"""
-    currencies = {
-        Currency.MX: ("pesos", "M. N."),
-        Currency.US: ("dolares americanos", "US Dollar"),
-        Currency.CA: ("dolares canadienses", "CA Dollar"),
-        Currency.EU: ("euros", "(E)"),
-        Currency.RU: ("rublos rusos", "RU Ruble")
-    }
-
     def __init__(self, num: str, currency: Currency = Currency.MX):
-        self.currency = currency
-        self.currency_descriptor = self.currencies[self.currency][0]
-        self.currency_ending = self.currencies[self.currency][1]
+        self.currency_symbol = currencies[currency][0]
+        self.currency_descriptor = currencies[currency][1]
+        self.currency_ending = currencies[currency][2]
         entry = num.replace(",", "").split(".")
         self.value = entry[0]
         try:
@@ -150,7 +151,7 @@ class Digit2Word:
 
 
 def main() -> None:
-    d2w = Digit2Word("49,231,234.4358")
+    d2w = Digit2Word("49,231,234.4358", Currency.JP)
     print(str(d2w))
 
 
