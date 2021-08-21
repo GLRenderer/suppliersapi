@@ -1,5 +1,6 @@
 from enum import Enum, auto
 
+
 class Currency(Enum):
     MX = auto()
     US = auto()
