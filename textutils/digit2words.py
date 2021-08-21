@@ -1,3 +1,4 @@
+from utils import const
 from enum import Enum, auto
 
 
@@ -105,14 +106,14 @@ def digit_triplets(num: str) -> str:
 
 
 def convert(num: str):
-    triplet = 3
+    const.TRIPLET = 3
     result = ""
     # Condition the input by removing possible commas and possible decimals
     quantity = num.replace(",", "").split(".")[0]
     n_digits = len(quantity)
     # Reverse the input and decode from least significant to most significant
     g_digits = quantity[::-1]
-    g_digits = [(g_digits[i:i + triplet]) for i in range(0, n_digits, triplet)]
+    g_digits = [(g_digits[i:i + const.TRIPLET]) for i in range(0, n_digits, const.TRIPLET)]
     g_digits = [q[::-1] for q in g_digits]
     last_loop = len(g_digits)
     for i, g in enumerate(g_digits, start=1):
